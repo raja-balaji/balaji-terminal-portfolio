@@ -1,13 +1,19 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+import { QueryClient } from "@tanstack/react-query";
 import { RouterProvider, createRouter } from "@tanstack/react-router";
 import { routeTree } from "./routeTree.gen";
-import "./index.css";
+import "./styles.css";
 
-// Create a new router instance
-const router = createRouter({ routeTree });
+const queryClient = new QueryClient();
 
-// Register the router instance for type safety
+const router = createRouter({
+  routeTree,
+  context: { queryClient },
+  scrollRestoration: true,
+  defaultPreloadStaleTime: 0,
+});
+
 declare module "@tanstack/react-router" {
   interface Register {
     router: typeof router;
@@ -16,10 +22,9 @@ declare module "@tanstack/react-router" {
 
 const rootElement = document.getElementById("root");
 if (rootElement && !rootElement.innerHTML) {
-  const root = ReactDOM.createRoot(rootElement);
-  root.render(
+  ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <RouterProvider router={router} />
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 }
